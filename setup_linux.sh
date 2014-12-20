@@ -5,6 +5,6 @@ echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | 
 
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install python-pip python-dev build-essential python-virtualenv nginx gunicorn
+sudo apt-get install -y python python-pip python-virtualenv nginx gunicorn
 sudo apt-get install -y mongodb-org
 
