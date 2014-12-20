@@ -174,7 +174,7 @@ api.add_resource(PlaceAPI, '/things/api/v1.0/places/<_id>', endpoint = 'place')
 app.wsgi_app = ProxyFix(app.wsgi_app)
     
 if __name__ == '__main__':
-    # app.run(debug = True)
-    http_server = HTTPServer(WSGIContainer(app))
-    http_server.listen(5000)
-    IOLoop.instance().start()
+    app.run(debug = True)
+    # http_server = HTTPServer(WSGIContainer(app))
+    # http_server.listen(5000)
+    # IOLoop.instance().start()
