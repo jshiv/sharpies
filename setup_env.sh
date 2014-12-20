@@ -1,8 +1,9 @@
-virtualenv flask
+virtualenv env
+source env/bin/activate
 
-flask/bin/pip install flask
-flask/bin/pip install flask-httpauth
-flask/bin/pip install flask-restful
-flask/bin/pip install gunicorn
-flask/bin/pip install pymongo
-flask/bin/pip install tornado
+env/bin/pip install flask
+env/bin/pip install flask-httpauth
+env/bin/pip install flask-restful
+env/bin/pip install gunicorn
+env/bin/pip install pymongo
+env/bin/pip install tornado
