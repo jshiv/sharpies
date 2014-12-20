@@ -106,7 +106,7 @@ place_fields = {
 }
 
 class PlaceListAPI(Resource):
-    decorators = [auth.login_required]
+    # decorators = [auth.login_required]
 
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
@@ -132,7 +132,7 @@ class PlaceListAPI(Resource):
         return { 'place': marshal(place, place_fields) }, 201
 
 class PlaceAPI(Resource):
-    decorators = [auth.login_required]
+    # decorators = [auth.login_required]
     
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
