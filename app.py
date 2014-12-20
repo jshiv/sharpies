@@ -1,5 +1,6 @@
 #!flask/bin/python
 
+
 """Alternative version of the ToDo RESTful server implemented using the
 Flask-RESTful extension."""
 
@@ -64,7 +65,8 @@ class mongoConn:
 
 
             
-db = mongoConn(db = 'backend', collection = 'places', url = 'mongodb://heroku_app32685412:m1rjg1bpghmlgl0gu1dqvpka4v@ds027761.mongolab.com:27761/heroku_app32685412')
+# db = mongoConn(db = 'backend', collection = 'places', url = 'mongodb://heroku_app32685412:m1rjg1bpghmlgl0gu1dqvpka4v@ds027761.mongolab.com:27761/heroku_app32685412')
+db = mongoConn(db = 'backend', collection = 'places')
 
 
  
@@ -174,7 +176,7 @@ api.add_resource(PlaceAPI, '/things/api/v1.0/places/<_id>', endpoint = 'place')
 app.wsgi_app = ProxyFix(app.wsgi_app)
     
 if __name__ == '__main__':
-    app.run(debug = True)
-    # http_server = HTTPServer(WSGIContainer(app))
-    # http_server.listen(5000)
-    # IOLoop.instance().start()
+    # app.run(debug = True)
+    http_server = HTTPServer(WSGIContainer(app))
+    http_server.listen(5000)
+    IOLoop.instance().start()
