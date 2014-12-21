@@ -1,21 +1,29 @@
 #!env/bin/python
-# import os
-# from flask import *
-
-# app = Flask(__name__)
-
-# @app.route('/')
-# def h():
-#     return 'Hey you guys!'
-#     #return render_template('hello.html')
-
-# if __name__ == "__main__":
-#     app.run()
-
-
 
 """Alternative version of the ToDo RESTful server implemented using the
-Flask-RESTful extension."""
+Flask-RESTful extension.
+
+Curl Commands:
+curl -u duchess:password -i -H "Content-Type: application/json" -X POST -d '{"title":"My Butt","description":"its all sticky..."}' https://recipe-schematics.herokuapp.com/api/v1.0/places
+
+httpie commands:
+GET:
+    http -a duchess:password https://sharpies.herokuapp.com/api/v1.0/places
+    or
+    curl -u duchess:password -i -H "Content-Type: application/json" -X GET https://sharpies.herokuapp.com/api/v1.0/places
+
+POST:
+    curl -u duchess:password -i -H "Content-Type: application/json" -X POST -d '{"title":"Mississippi","description":"can you spell that with out using an i"}' https://sharpies.herokuapp.com/api/v1.0/places
+
+PUT:
+    curl -u duchess:password -i -H "Content-Type: application/json" -X PUT -d '{"title":"BUTT BUTT","description":"  CHICKEN BUTT   "}' https://sharpies.herokuapp.com/api/v1.0/places/54962928c177ac0007eaeac8
+
+DELETE:
+    curl -u duchess:password -i -H "Content-Type: application/json" -X DELETE https://sharpies.herokuapp.com/api/v1.0/places/54962928c177ac0007eaeac8
+
+aws ssh template:
+ssh -i root/notes/.keys/see_spark_run.pem ubuntu@ec2-54-148-91-215.us-west-2.compute.amazonaws.com
+"""
 
 from flask import Flask, jsonify, abort, request, make_response, url_for
 from flask.views import MethodView
@@ -188,7 +196,7 @@ api.add_resource(PlaceAPI, '/api/v1.0/places/<_id>', endpoint = 'place')
 app.wsgi_app = ProxyFix(app.wsgi_app)
     
 if __name__ == '__main__':
-    app.run(debug = True)
-    # http_server = HTTPServer(WSGIContainer(app))
-    # http_server.listen(5000)
-    # IOLoop.instance().start()
+    #app.run(debug = True)
+    http_server = HTTPServer(WSGIContainer(app))
+    http_server.listen(5000)
+    IOLoop.instance().start()
