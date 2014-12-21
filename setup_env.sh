@@ -7,3 +7,4 @@ env/bin/pip install flask-restful
 env/bin/pip install gunicorn
 env/bin/pip install pymongo
 env/bin/pip install tornado
+env/bin/pip install bson
