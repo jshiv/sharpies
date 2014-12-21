@@ -182,8 +182,8 @@ class PlaceAPI(Resource):
         db.collection.remove({u'_id': ObjectId(str(_id))})
         return { 'result': True }
 
-api.add_resource(PlaceListAPI, '/things/api/v1.0/places', endpoint = 'places')
-api.add_resource(PlaceAPI, '/things/api/v1.0/places/<_id>', endpoint = 'place')
+api.add_resource(PlaceListAPI, '/api/v1.0/places', endpoint = 'places')
+api.add_resource(PlaceAPI, '/api/v1.0/places/<_id>', endpoint = 'place')
 
 app.wsgi_app = ProxyFix(app.wsgi_app)
     
