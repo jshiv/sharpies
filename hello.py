@@ -1,17 +1,20 @@
-#!env/bin/python
-from flask import Flask
+import os
+from flask import *
+
 app = Flask(__name__)
 
 @app.route('/')
-def hello_world():
+def hello():
     return 'Hello World!'
+    #return render_template('hello.html')
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
 
 
+
 # """Alternative version of the ToDo RESTful server implemented using the
-# Flask-RESTful extension."""
+# Flask-RESTful extension.#!env/bin/python"""
 
 # from flask import Flask, jsonify, abort, request, make_response, url_for
 # from flask.views import MethodView
