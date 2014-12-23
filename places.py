@@ -23,6 +23,22 @@ DELETE:
 
 aws ssh template:
 ssh -i root/notes/.keys/see_spark_run.pem ubuntu@ec2-54-148-91-215.us-west-2.compute.amazonaws.com
+
+
+                         _
+_._ _..._ .-',     _.._(`))
+'-. `     '  /-._.-'    ',/
+   )         \            '.
+  / _    _    |             \
+|  a    a    /              |
+\   .-.                     ;  
+  '-('' ).-'       ,'       ;
+     '-;           |      .'
+        \           \    /
+        | 7  .__  _.-\   \
+        | |  |  ``/  /`  /
+       /,_|  |   /,_/   /
+          /,_/      '`-'
 """
 
 from flask import Flask, jsonify, abort, request, make_response, url_for
