@@ -135,8 +135,20 @@ places = [
 #db.collection.insert(places)#seed database
  
 place_fields = {
-    'title': fields.String,
-    'description': fields.String,
+    'name': fields.String,
+    'information': fields.String,
+    'type':fields.String,
+    'address':fields.String,
+    'phone':fields.String,
+    'long':fields.String,
+    'lat':fields.String,
+    'cover':fields.Integer,
+    'line':fields.String,
+    'pop':fields.Integer,
+    'image':fields.String,
+
+
+
     'uri': fields.Url('place'),
     '_id':fields.String
 }
@@ -146,7 +158,7 @@ class PlaceListAPI(Resource):
 
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('title', type = str, required = True, help = 'No place title provided', location = 'json')
+        self.reqparse.add_argument('name', type = str, required = True, help = 'No name provided', location = 'json')
         self.reqparse.add_argument('description', type = str, default = "", location = 'json')
         super(PlaceListAPI, self).__init__()
         
@@ -212,7 +224,7 @@ api.add_resource(PlaceAPI, '/api/v1.0/places/<_id>', endpoint = 'place')
 app.wsgi_app = ProxyFix(app.wsgi_app)
     
 if __name__ == '__main__':
-    #app.run(debug = True)
-    http_server = HTTPServer(WSGIContainer(app))
-    http_server.listen(5000)
-    IOLoop.instance().start()
+    app.run(debug = True)
+    #http_server = HTTPServer(WSGIContainer(app))
+    #http_server.listen(5000)
+    #IOLoop.instance().start()
