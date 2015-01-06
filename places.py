@@ -4,7 +4,7 @@
 Flask-RESTful extension.
 
 Curl Commands:
-curl -u duchess:password -i -H "Content-Type: application/json" -X POST -d '{"title":"My Butt","description":"its all sticky..."}' https://recipe-schematics.herokuapp.com/api/v1.0/places
+curl -u duchess:password -i -H "Content-Type: application/json" -X POST -d '{"name":"My Butt","information":"its all sticky..."}' https://recipe-schematics.herokuapp.com/api/v1.0/places
 
 httpie commands:
 GET:
@@ -12,11 +12,17 @@ GET:
     or
     curl -u duchess:password -i -H "Content-Type: application/json" -X GET https://sharpies.herokuapp.com/api/v1.0/places
 
+GET NEAR mongo query only:
+lng = -122.413294
+lat = 37.786121
+max_dist_meters = 100
+placesNear = [doc for doc in db.collection.find({"loc" : {"$near": { "$geometry" : {"type":"Point","coordinates":[lng, lat]},"$maxDistance":max_dist_meters}}})]
+
 POST:
-    curl -u duchess:password -i -H "Content-Type: application/json" -X POST -d '{"title":"Mississippi","description":"can you spell that with out using an i"}' https://sharpies.herokuapp.com/api/v1.0/places
+    curl -u duchess:password -i -H "Content-Type: application/json" -X POST -d '{"name":"Mississippi","information":"can you spell that with out using an i"}' https://sharpies.herokuapp.com/api/v1.0/places
 
 PUT:
-    curl -u duchess:password -i -H "Content-Type: application/json" -X PUT -d '{"title":"BUTT BUTT","description":"  CHICKEN BUTT   "}' https://sharpies.herokuapp.com/api/v1.0/places/54962928c177ac0007eaeac8
+    curl -u duchess:password -i -H "Content-Type: application/json" -X PUT -d '{"name":"BUTT BUTT","information":"  CHICKEN BUTT   "}' https://sharpies.herokuapp.com/api/v1.0/places/54962928c177ac0007eaeac8
 
 DELETE:
     curl -u duchess:password -i -H "Content-Type: application/json" -X DELETE https://sharpies.herokuapp.com/api/v1.0/places/54962928c177ac0007eaeac8
@@ -39,6 +45,7 @@ _._ _..._ .-',     _.._(`))
         | |  |  ``/  /`  /
        /,_|  |   /,_/   /
           /,_/      '`-'
+          
 """
 
 from flask import Flask, jsonify, abort, request, make_response, url_for
@@ -122,13 +129,13 @@ def unauthorized():
 places = [
     {
         'id': 1,
-        'title': u'Your House',
-        'description': u'Where we go to play!'
+        'name': u'Your House',
+        'information': u'Where we go to play!'
     },
     {
         'id': 2,
-        'title': u'My House',
-        'description': u'Where we go to stay!'
+        'name': u'My House',
+        'information': u'Where we go to stay!'
     }
 ]
 
@@ -148,7 +155,6 @@ place_fields = {
     'image':fields.String,
 
 
-
     'uri': fields.Url('place'),
     '_id':fields.String
 }
@@ -158,8 +164,17 @@ class PlaceListAPI(Resource):
 
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('name', type = str, required = True, help = 'No name provided', location = 'json')
-        self.reqparse.add_argument('description', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('name', type = str, required = True, help = 'No place name provided', location = 'json')
+        self.reqparse.add_argument('information', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('type', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('address', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('phone', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('long', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('lat', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('cover', type = int, default = 0, location = 'json')
+        self.reqparse.add_argument('line', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('pop', type = int, default = 0, location = 'json')
+        self.reqparse.add_argument('image', type = str, default = "", location = 'json')
         super(PlaceListAPI, self).__init__()
         
     def get(self):
@@ -168,24 +183,81 @@ class PlaceListAPI(Resource):
 
     def post(self):
         args = self.reqparse.parse_args()
-        place = {
-            'id': places[-1]['id'] + 1,
-            'title': args['title'],
-            'description': args['description'],
-        }
-        db.collection.insert(place)#insert the new place
-        _id = str([doc['_id'] for doc in db.collection.find({'id': place['id']})][0])#collect mongos generated object id
-        place.update({'_id':_id})#update the dict with mongos object id
-        places.append(place)
+        place = args
+        # construct the location parameter for geoJson mongodb stuff
+        try:
+            if (place['long'] != '') and (place['lat'] != ''):
+                place.update({'loc': { "type": "Point", "coordinates": [ float(place['long']), float(place['lat']) ] }})
+        except:
+            pass
+        # place = {
+        #     'id': places[-1]['id'] + 1,
+        #     'name': args['name'],
+        #     'information': args['information'],
+        #     'type': args['type'],
+        #     'address': args['address']
+        # }
+
+        _id = db.collection.insert(place)#insert the new place
+        locDict = place.pop('loc',None)#remove the loc parameter from the json document but keep it in mongo
+        # _id = str([doc['_id'] for doc in db.collection.find({'id': place['id']})][0])#collect mongos generated object id
+        place.update({'_id':str(_id)})#update the dict with mongos object id
+        #places.append(place)
         return { 'place': marshal(place, place_fields) }, 201
+
+
+
+class PlacesNearAPI(Resource):
+    # decorators = [auth.login_required]
+    
+    def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument('name', type = str, location = 'json')
+        self.reqparse.add_argument('information', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('type', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('address', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('phone', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('long', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('lat', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('cover', type = int, default = 0, location = 'json')
+        self.reqparse.add_argument('line', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('pop', type = int, default = 0, location = 'json')
+        self.reqparse.add_argument('image', type = str, default = "", location = 'json')
+        super(PlacesNearAPI, self).__init__()
+
+    def get(self,lng,lat,radius):
+        # place = filter(lambda t: t['_id'] == _id, places)
+        #lng = -122.413294
+        #lat = 37.786121
+        # max_dist_meters = 100
+        nearest_places = [doc for doc in db.collection.find({"loc" : {"$near": { "$geometry" : {"type":"Point","coordinates":[float(lng), float(lat)]},"$maxDistance":float(radius)}}})]
+
+        # places_near = [{"cover": 20,
+        # "name": "Bartinis",
+        # "address": "43 Central Ave",
+        # "phone": "978-319-1460",
+        # "pop": 5,
+        # "line": "5-10",
+        # "type": "Dive/Sports Bar",
+        # "image": "BartinisBarImage",
+        # "information": "$1 Jello Shots all night!!!",
+        # "long" : "-122.424324", 
+        # "lat":"37.788359" 
+        #  }]
+        #place = [doc for doc in db.collection.find({u'_id': ObjectId(str(_id))})]
+        if len(nearest_places) == 0:
+            abort(404)
+        return { 'nearest_places': map(lambda t: marshal(t, place_fields), nearest_places) }
 
 class PlaceAPI(Resource):
     # decorators = [auth.login_required]
     
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('title', type = str, location = 'json')
-        self.reqparse.add_argument('description', type = str, location = 'json')
+        self.reqparse.add_argument('name', type = str, location = 'json')
+        self.reqparse.add_argument('information', type = str, location = 'json')
+        self.reqparse.add_argument('type', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('address', type = str, default = "", location = 'json')
         self.reqparse.add_argument('done', type = bool, location = 'json')
         super(PlaceAPI, self).__init__()
 
@@ -220,11 +292,12 @@ class PlaceAPI(Resource):
 
 api.add_resource(PlaceListAPI, '/api/v1.0/places', endpoint = 'places')
 api.add_resource(PlaceAPI, '/api/v1.0/places/<_id>', endpoint = 'place')
+api.add_resource(PlacesNearAPI, '/api/v1.0/nearest_places/<lng>,<lat>,<radius>', endpoint = 'nearest_places')
 
 app.wsgi_app = ProxyFix(app.wsgi_app)
     
 if __name__ == '__main__':
-    app.run(debug = True)
-    #http_server = HTTPServer(WSGIContainer(app))
-    #http_server.listen(5000)
-    #IOLoop.instance().start()
+    #app.run(debug = True)
+    http_server = HTTPServer(WSGIContainer(app))
+    http_server.listen(8080)
+    IOLoop.instance().start()
