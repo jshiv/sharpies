@@ -108,8 +108,8 @@ class mongoConn:
             self.fs = gridfs.GridFS(self.db)
 
             
-db = mongoConn(db = 'heroku_app32685412', collection = 'places', url = 'mongodb://heroku_app32685412:m1rjg1bpghmlgl0gu1dqvpka4v@ds027761.mongolab.com:27761/heroku_app32685412')
-# db = mongoConn(db = 'backend', collection = 'places')
+# db = mongoConn(db = 'heroku_app32685412', collection = 'places', url = 'mongodb://heroku_app32685412:m1rjg1bpghmlgl0gu1dqvpka4v@ds027761.mongolab.com:27761/heroku_app32685412')
+db = mongoConn(db = 'backend', collection = 'places')
 
 
  
