@@ -61,6 +61,7 @@ from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 # from app import app
+import sys
 
 
  
@@ -107,9 +108,12 @@ class mongoConn:
         if 'gridfs' in locals():
             self.fs = gridfs.GridFS(self.db)
 
-            
-db = mongoConn(db = 'heroku_app32685412', collection = 'places', url = 'mongodb://heroku_app32685412:m1rjg1bpghmlgl0gu1dqvpka4v@ds027761.mongolab.com:27761/heroku_app32685412')
-#db = mongoConn(db = 'backend', collection = 'places')
+
+if 'darwin' in sys.platform: #connect to local database
+    db = mongoConn(db = 'backend', collection = 'places')
+else:  
+    db = mongoConn(db = 'heroku_app32685412', collection = 'places', url = 'mongodb://heroku_app32685412:m1rjg1bpghmlgl0gu1dqvpka4v@ds027761.mongolab.com:27761/heroku_app32685412')
+
 db.collection.ensure_index([("loc", pymongo.GEOSPHERE)])
 
  
