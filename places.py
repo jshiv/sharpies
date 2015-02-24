@@ -151,7 +151,7 @@ place_fields = {
     'lat':fields.String,
     'cover':fields.Integer,
     'time':fields.Integer,
-    'line':fields.String,
+    'line':fields.Integer,
     'pop':fields.Integer,
     'image':fields.String,
 
@@ -174,7 +174,7 @@ class PlaceListAPI(Resource):
         self.reqparse.add_argument('lat', type = str, default = "", location = 'json')
         self.reqparse.add_argument('cover', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('time', type = int, default = 0, location = 'json')
-        self.reqparse.add_argument('line', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('line', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('pop', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('image', type = str, default = "", location = 'json')
         super(PlaceListAPI, self).__init__()
@@ -223,7 +223,7 @@ class PlacesNearAPI(Resource):
         self.reqparse.add_argument('lat', type = str, default = "", location = 'json')
         self.reqparse.add_argument('cover', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('time', type = int, default = 0, location = 'json')
-        self.reqparse.add_argument('line', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('line', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('pop', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('image', type = str, default = "", location = 'json')
         super(PlacesNearAPI, self).__init__()
@@ -264,7 +264,7 @@ class PlaceAPI(Resource):
         self.reqparse.add_argument('done', type = bool, location = 'json')
         self.reqparse.add_argument('cover', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('time', type = int, default = 0, location = 'json')
-        self.reqparse.add_argument('line', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('line', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('pop', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('image', type = str, default = "", location = 'json')
         super(PlaceAPI, self).__init__()
@@ -284,15 +284,15 @@ class PlaceAPI(Resource):
         place = place[0]
         args = self.reqparse.parse_args()
 
-        # #code to update a store list of (time,cover) values
-        # if ('cover' in args.keys()) & ('time' in args.keys()):
-        #     place = set_dict_list(place,'_put_cover_list', [args['time'], args['cover']])
-        #     _put_cover_list = sorted(place['_put_cover_list'], reverse = True)[:1000]#sort the list in reverse and only keep the lastest 1000 results
-        #     time_cover_pair = _put_cover_list[0]
-        #     # place['time'] = time_cover_pair[0]
-        #     # place['cover'] = time_cover_pair[1]
-        #     db.collection.update({u'_id': ObjectId(str(_id))}, {"$set": {'_put_cover_list':_put_cover_list} } ,upsert = True)
-        #     print place
+        #code to update a store list of (time,cover) values
+        if ('cover' in args.keys()) & ('time' in args.keys()):
+            place = set_dict_list(place,'_put_cover_list', [args['time'], args['cover']])
+            _put_cover_list = sorted(place['_put_cover_list'], reverse = True)[:1000]#sort the list in reverse and only keep the lastest 1000 results
+            time_cover_pair = _put_cover_list[0]
+            # place['time'] = time_cover_pair[0]
+            # place['cover'] = time_cover_pair[1]
+            db.collection.update({u'_id': ObjectId(str(_id))}, {"$set": {'_put_cover_list':_put_cover_list} } ,upsert = True)
+            print place
 
         for k, v in args.iteritems():
             if v != None:
