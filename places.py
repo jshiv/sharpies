@@ -151,7 +151,7 @@ place_fields = {
     'lat':fields.String,
     'cover':fields.Integer,
     'time':fields.Integer,
-    'line':fields.String,
+    'line':fields.Integer,
     'pop':fields.Integer,
     'image':fields.String,
 
@@ -174,7 +174,7 @@ class PlaceListAPI(Resource):
         self.reqparse.add_argument('lat', type = str, default = "", location = 'json')
         self.reqparse.add_argument('cover', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('time', type = int, default = 0, location = 'json')
-        self.reqparse.add_argument('line', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('line', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('pop', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('image', type = str, default = "", location = 'json')
         super(PlaceListAPI, self).__init__()
@@ -223,7 +223,7 @@ class PlacesNearAPI(Resource):
         self.reqparse.add_argument('lat', type = str, default = "", location = 'json')
         self.reqparse.add_argument('cover', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('time', type = int, default = 0, location = 'json')
-        self.reqparse.add_argument('line', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('line', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('pop', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('image', type = str, default = "", location = 'json')
         super(PlacesNearAPI, self).__init__()
@@ -264,7 +264,7 @@ class PlaceAPI(Resource):
         self.reqparse.add_argument('done', type = bool, location = 'json')
         self.reqparse.add_argument('cover', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('time', type = int, default = 0, location = 'json')
-        self.reqparse.add_argument('line', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('line', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('pop', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('image', type = str, default = "", location = 'json')
         super(PlaceAPI, self).__init__()
