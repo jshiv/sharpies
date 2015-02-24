@@ -110,7 +110,7 @@ class mongoConn:
             
 # db = mongoConn(db = 'heroku_app32685412', collection = 'places', url = 'mongodb://heroku_app32685412:m1rjg1bpghmlgl0gu1dqvpka4v@ds027761.mongolab.com:27761/heroku_app32685412')
 db = mongoConn(db = 'backend', collection = 'places')
-
+db.collection.ensure_index([("loc", pymongo.GEOSPHERE)])
 
  
 @auth.get_password
@@ -150,7 +150,8 @@ place_fields = {
     'long':fields.String,
     'lat':fields.String,
     'cover':fields.Integer,
-    'line':fields.String,
+    'time':fields.Integer,
+    'line':fields.Integer,
     'pop':fields.Integer,
     'image':fields.String,
 
@@ -172,7 +173,8 @@ class PlaceListAPI(Resource):
         self.reqparse.add_argument('long', type = str, default = "", location = 'json')
         self.reqparse.add_argument('lat', type = str, default = "", location = 'json')
         self.reqparse.add_argument('cover', type = int, default = 0, location = 'json')
-        self.reqparse.add_argument('line', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('time', type = int, default = 0, location = 'json')
+        self.reqparse.add_argument('line', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('pop', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('image', type = str, default = "", location = 'json')
         super(PlaceListAPI, self).__init__()
@@ -220,7 +222,8 @@ class PlacesNearAPI(Resource):
         self.reqparse.add_argument('long', type = str, default = "", location = 'json')
         self.reqparse.add_argument('lat', type = str, default = "", location = 'json')
         self.reqparse.add_argument('cover', type = int, default = 0, location = 'json')
-        self.reqparse.add_argument('line', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('time', type = int, default = 0, location = 'json')
+        self.reqparse.add_argument('line', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('pop', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('image', type = str, default = "", location = 'json')
         super(PlacesNearAPI, self).__init__()
@@ -259,6 +262,11 @@ class PlaceAPI(Resource):
         self.reqparse.add_argument('type', type = str, default = "", location = 'json')
         self.reqparse.add_argument('address', type = str, default = "", location = 'json')
         self.reqparse.add_argument('done', type = bool, location = 'json')
+        self.reqparse.add_argument('cover', type = int, default = 0, location = 'json')
+        self.reqparse.add_argument('time', type = int, default = 0, location = 'json')
+        self.reqparse.add_argument('line', type = int, default = 0, location = 'json')
+        self.reqparse.add_argument('pop', type = int, default = 0, location = 'json')
+        self.reqparse.add_argument('image', type = str, default = "", location = 'json')
         super(PlaceAPI, self).__init__()
 
     def get(self, _id):
@@ -275,6 +283,17 @@ class PlaceAPI(Resource):
             abort(404)
         place = place[0]
         args = self.reqparse.parse_args()
+
+        #code to update a store list of (time,cover) values
+        if ('cover' in args.keys()) & ('time' in args.keys()):
+            place = set_dict_list(place,'_put_cover_list', [args['time'], args['cover']])
+            _put_cover_list = sorted(place['_put_cover_list'], reverse = True)[:1000]#sort the list in reverse and only keep the lastest 1000 results
+            time_cover_pair = _put_cover_list[0]
+            # place['time'] = time_cover_pair[0]
+            # place['cover'] = time_cover_pair[1]
+            db.collection.update({u'_id': ObjectId(str(_id))}, {"$set": {'_put_cover_list':_put_cover_list} } ,upsert = True)
+            print place
+
         for k, v in args.iteritems():
             if v != None:
                 place[k] = v
@@ -289,6 +308,16 @@ class PlaceAPI(Resource):
         #places.remove(place[0])
         db.collection.remove({u'_id': ObjectId(str(_id))})
         return { 'result': True }
+
+
+def set_dict_list(d, name, value):
+    #if put_list is not in, create it as empty list
+    if (name in d.keys()) == False:
+        d.setdefault(name,[])
+
+    d[name].append(value)
+    return d
+
 
 api.add_resource(PlaceListAPI, '/api/v1.0/places', endpoint = 'places')
 api.add_resource(PlaceAPI, '/api/v1.0/places/<_id>', endpoint = 'place')
