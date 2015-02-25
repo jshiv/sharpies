@@ -296,7 +296,7 @@ class PlaceAPI(Resource):
             # place['time'] = time_cover_pair[0]
             # place['cover'] = time_cover_pair[1]
             db.collection.update({u'_id': ObjectId(str(_id))}, {"$set": {'_put_cover_list':_put_cover_list} } ,upsert = True)
-            print place
+            #print place
 
         for k, v in args.iteritems():
             if v != None:
