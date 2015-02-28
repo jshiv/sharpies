@@ -263,14 +263,14 @@ class PlaceAPI(Resource):
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument('name', type = str, location = 'json')
         self.reqparse.add_argument('information', type = str, location = 'json')
-        self.reqparse.add_argument('type', type = str, default = "", location = 'json')
-        self.reqparse.add_argument('address', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('type', type = str, location = 'json')
+        self.reqparse.add_argument('address', type = str, location = 'json')
         self.reqparse.add_argument('done', type = bool, location = 'json')
-        self.reqparse.add_argument('cover', type = int, default = 0, location = 'json')
-        self.reqparse.add_argument('time', type = int, default = 0, location = 'json')
-        self.reqparse.add_argument('line', type = int, default = 0, location = 'json')
-        self.reqparse.add_argument('pop', type = int, default = 0, location = 'json')
-        self.reqparse.add_argument('image', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('cover', type = int, location = 'json')
+        self.reqparse.add_argument('time', type = int, location = 'json')
+        self.reqparse.add_argument('line', type = int, location = 'json')
+        self.reqparse.add_argument('pop', type = int, location = 'json')
+        self.reqparse.add_argument('image', type = str, location = 'json')
         super(PlaceAPI, self).__init__()
 
     def get(self, _id):
@@ -298,10 +298,13 @@ class PlaceAPI(Resource):
             db.collection.update({u'_id': ObjectId(str(_id))}, {"$set": {'_put_cover_list':_put_cover_list} } ,upsert = True)
             #print place
 
+        #print '==============================='
         for k, v in args.iteritems():
+            #print k,v
             if v != None:
                 place[k] = v
                 db.collection.update({u'_id': ObjectId(str(_id))}, {"$set": {k:v} } ,upsert = True)
+        #print '==============================='
         return { 'place': marshal(place, place_fields) }
 
     def delete(self, _id):
