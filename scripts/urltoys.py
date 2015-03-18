@@ -3,9 +3,14 @@ import json
 
 local = True
 
-def make_url(url_ext = 'places'):
+def get_public_ip():
+    '''returns the public facing ip address of your machine'''
+    data = json.loads(urllib2.urlopen("http://ip.jsontest.com/").read())
+    return data["ip"]
+
+def make_url(url_ext = 'places', ip = 'localhost'):
     if local:
-        host = 'http://localhost:8080/'
+        host = 'http://'+ip+':8080/'
     else:
         host = 'https://sharpies.herokuapp.com/'
 

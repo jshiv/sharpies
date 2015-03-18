@@ -151,10 +151,12 @@ place_fields = {
     'type':fields.String,
     'address':fields.String,
     'phone':fields.String,
+    'hours':fields.String,
     'long':fields.String,
     'lat':fields.String,
+    'time_post_cover':fields.Integer,
     'cover':fields.Integer,
-    'time':fields.Integer,
+    'time_post_line':fields.Integer,
     'line':fields.Integer,
     'pop':fields.Integer,
     'image':fields.String,
@@ -174,10 +176,12 @@ class PlaceListAPI(Resource):
         self.reqparse.add_argument('type', type = str, default = "", location = 'json')
         self.reqparse.add_argument('address', type = str, default = "", location = 'json')
         self.reqparse.add_argument('phone', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('hours', type = str, default = "", location = 'json')
         self.reqparse.add_argument('long', type = str, default = "", location = 'json')
         self.reqparse.add_argument('lat', type = str, default = "", location = 'json')
         self.reqparse.add_argument('cover', type = int, default = 0, location = 'json')
-        self.reqparse.add_argument('time', type = int, default = 0, location = 'json')
+        self.reqparse.add_argument('time_post_cover', type = int, default = 0, location = 'json')
+        self.reqparse.add_argument('time_post_line', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('line', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('pop', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('image', type = str, default = "", location = 'json')
@@ -223,10 +227,12 @@ class PlacesNearAPI(Resource):
         self.reqparse.add_argument('type', type = str, default = "", location = 'json')
         self.reqparse.add_argument('address', type = str, default = "", location = 'json')
         self.reqparse.add_argument('phone', type = str, default = "", location = 'json')
+        self.reqparse.add_argument('hours', type = str, default = "", location = 'json')
         self.reqparse.add_argument('long', type = str, default = "", location = 'json')
         self.reqparse.add_argument('lat', type = str, default = "", location = 'json')
         self.reqparse.add_argument('cover', type = int, default = 0, location = 'json')
-        self.reqparse.add_argument('time', type = int, default = 0, location = 'json')
+        self.reqparse.add_argument('time_post_cover', type = int, default = 0, location = 'json')
+        self.reqparse.add_argument('time_post_line', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('line', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('pop', type = int, default = 0, location = 'json')
         self.reqparse.add_argument('image', type = str, default = "", location = 'json')
@@ -265,9 +271,11 @@ class PlaceAPI(Resource):
         self.reqparse.add_argument('information', type = str, location = 'json')
         self.reqparse.add_argument('type', type = str, location = 'json')
         self.reqparse.add_argument('address', type = str, location = 'json')
-        self.reqparse.add_argument('done', type = bool, location = 'json')
+        self.reqparse.add_argument('phone', type = str, location = 'json')
+        self.reqparse.add_argument('hours', type = str, location = 'json')
         self.reqparse.add_argument('cover', type = int, location = 'json')
-        self.reqparse.add_argument('time', type = int, location = 'json')
+        self.reqparse.add_argument('time_post_cover', type = int, location = 'json')
+        self.reqparse.add_argument('time_post_line', type = int, location = 'json')
         self.reqparse.add_argument('line', type = int, location = 'json')
         self.reqparse.add_argument('pop', type = int, location = 'json')
         self.reqparse.add_argument('image', type = str, location = 'json')
